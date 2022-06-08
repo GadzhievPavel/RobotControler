@@ -5,6 +5,7 @@
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.2" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.16" />
+        <entry key="app/src/main/res/layout/cloudpoint_view.xml" value="0.15833333333333333" />
         <entry key="app/src/main/res/layout/control_activity.xml" value="0.15" />
         <entry key="app/src/main/res/layout/view_robot_joystick.xml" value="0.22" />
       </map>

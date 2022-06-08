@@ -39,4 +39,9 @@
         <attr format="integer" name="port"/>
         <attr format="string" name="ip"/>
     </declare-styleable>
+
+    <declare-styleable name="PointCloudView">
+        <attr name="ip"/>
+        <attr name="port"/>
+    </declare-styleable>
 </resources>

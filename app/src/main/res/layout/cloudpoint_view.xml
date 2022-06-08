@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cloudPointView"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:parentTag="android.widget.RelativeLayout">
+
+    <com.example.robotcontroler.view.pointcloud.PointCloudGLSurfaceView
+        android:id="@+id/cloudPointSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:ip="192.168.0.104"
+        app:port="50001" />
+
+        <Switch
+            android:id="@+id/xRotate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_red_dark"
+            android:text="X Rotate"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@id/yRotate"
+            android:layout_margin="5dp"
+            android:checked="false"
+            />
+        <Switch
+            android:textColor="@android:color/holo_blue_dark"
+            android:id="@+id/yRotate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Y Rotate"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@id/zRotate"
+            android:layout_margin="5dp"
+            android:checked="false"
+            />
+        <Switch
+            android:textColor="@android:color/holo_green_dark"
+            android:id="@+id/zRotate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Z Rotate"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="5dp"
+            android:checked="false"
+            />
+
+</merge>

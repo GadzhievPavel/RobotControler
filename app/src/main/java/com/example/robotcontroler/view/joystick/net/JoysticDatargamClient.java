@@ -32,7 +32,7 @@ public class JoysticDatargamClient implements Runnable{
     public JoysticDatargamClient(String ipServer, int portServer) {
         thread = new Thread(this, "sending data thread");
         this.ip = ipServer;
-        Log.e("ip",ip);
+        //Log.e("ip",ip);
         this.port = portServer;
         this.angle = 0;
         this.strength = 0;
@@ -60,9 +60,9 @@ public class JoysticDatargamClient implements Runnable{
     public void run() {
         try {
             udpSocket = new DatagramSocket();
-            Log.e("inetAddress","init");
+            //Log.e("inetAddress","init");
             inetAddress = InetAddress.getByName(ip);
-            Log.e("inetAddress","finish init");
+            //Log.e("inetAddress","finish init");
             udpSocket.connect(inetAddress, port);
             run = true;
             while (run){
@@ -70,7 +70,7 @@ public class JoysticDatargamClient implements Runnable{
                     String s = "twist";
                     Log.e("angle st",angle+" "+strength);
                     sendMsg = makeByteArray(s.getBytes(StandardCharsets.UTF_8), angle, strength);
-                    Log.e("sendMsg", String.valueOf(sendMsg.toString()));
+                    //Log.e("sendMsg", String.valueOf(sendMsg.toString()));
                     Log.e("port", String.valueOf(port));
                     DatagramPacket packet = new DatagramPacket(sendMsg, sendMsg.length, inetAddress, port);
                     udpSocket.send(packet);
