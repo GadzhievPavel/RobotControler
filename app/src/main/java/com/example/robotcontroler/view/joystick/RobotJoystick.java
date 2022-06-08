@@ -8,11 +8,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.robotcontroler.R;
+import com.example.robotcontroler.view.joystick.net.JoysticDatargamClient;
 
 public class RobotJoystick extends RelativeLayout implements JoystickSimple.OnMoveListener {
 
     private JoystickSimple joystickSimple;
     private TextView name;
+    private JoysticDatargamClient client;
     public RobotJoystick(Context context,String name, String ip, int port) {
         super(context);
         View view = View.inflate(context, R.layout.view_robot_joystick,this);
@@ -20,6 +22,10 @@ public class RobotJoystick extends RelativeLayout implements JoystickSimple.OnMo
         this.name = view.findViewById(R.id.name_joystick_base);
         this.name.setText(name);
         joystickSimple.setOnMoveListener(this);
+        Log.e("ip",ip);
+        client = new JoysticDatargamClient(ip,port);
+        client.startThread();
+        client.pauseThread();
     }
 
     public RobotJoystick(Context context, AttributeSet attrs) {
@@ -31,6 +37,11 @@ public class RobotJoystick extends RelativeLayout implements JoystickSimple.OnMo
 
     @Override
     public void onMove(int angle, int strength) {
+        client.resumeThread();
         Log.e("move",angle+" "+strength);
+        client.setTwist(angle,strength);
+        client.pauseThread();
     }
+
+
 }

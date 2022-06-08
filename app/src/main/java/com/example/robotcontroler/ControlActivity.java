@@ -1,6 +1,7 @@
 package com.example.robotcontroler;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -29,13 +30,15 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout relativeLayout;
     private int typeView;
-
+    private String ip;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         typeView = 0;
         setContentView(R.layout.control_activity);
         initView();
+        Bundle arguments = getIntent().getExtras();
+        ip = arguments.get("ip").toString();
         setAllViewListener();
     }
 
@@ -81,8 +84,9 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
                     switch (viewType){
                         case JOYSTICK:
                             LinearLayout.LayoutParams params;
+                            Log.e("address",ip+" "+Integer.parseInt(port.getText().toString()));
                             RobotJoystick robotJoystick = new RobotJoystick(ControlActivity.this,name.getText().toString(),
-                                    "",Integer.parseInt(port.getText().toString()));
+                                    ip,Integer.parseInt(port.getText().toString()));
                             params = new LinearLayout.LayoutParams(250,250);
                             robotJoystick.setLayoutParams(params);
                             robotJoystick.setOnTouchListener(this);
