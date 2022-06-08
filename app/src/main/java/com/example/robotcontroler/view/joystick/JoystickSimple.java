@@ -17,10 +17,12 @@ import android.view.View;
 import android.view.ViewConfiguration;
 
 import com.example.robotcontroler.R;
+import com.example.robotcontroler.view.joystick.net.JoysticDatargamClient;
 
 public class JoystickSimple extends View
         implements
         Runnable {
+
 
     /*
     INTERFACES
@@ -226,6 +228,8 @@ public class JoystickSimple extends View
     private int mButtonDirection = 0;
 
 
+    JoysticDatargamClient client;
+
     /*
     CONSTRUCTORS
      */
@@ -237,8 +241,11 @@ public class JoystickSimple extends View
      * @param context The Context the JoystickView is running in, through which it can
      *        access the current theme, resources, etc.
      */
-    public JoystickSimple(Context context) {
+    public JoystickSimple(Context context,String ip, int port) {
         this(context, null);
+        client = new JoysticDatargamClient(ip, port);
+        client.startThread();
+        client.pauseThread();
     }
 
 
@@ -455,6 +462,9 @@ public class JoystickSimple extends View
                 // update now the last strength and angle which should be zero after resetButton
                 if (mCallback != null)
                     mCallback.onMove(getAngle(), getStrength());
+                client.resumeThread();
+                client.setTwist(getAngle(), getStrength());
+                client.pauseThread();
             }
 
             // if mAutoReCenterButton is false we will send the last strength and angle a bit
@@ -471,6 +481,9 @@ public class JoystickSimple extends View
 
             if (mCallback != null)
                 mCallback.onMove(getAngle(), getStrength());
+            client.resumeThread();
+            client.setTwist(getAngle(), getStrength());
+            client.pauseThread();
         }
 
         // handle first touch and long press with multiple touch only
@@ -524,9 +537,12 @@ public class JoystickSimple extends View
                 mCallback.onMove(getAngle(), getStrength());
         }
 
-
+        client.resumeThread();
+        client.setTwist(getAngle(), getStrength());
+        client.pauseThread();
         // to force a new draw
         invalidate();
+
 
         return true;
     }

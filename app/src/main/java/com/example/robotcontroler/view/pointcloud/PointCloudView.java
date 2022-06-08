@@ -15,8 +15,59 @@ public class PointCloudView extends RelativeLayout {
     private Switch xRotate, yRotate, zRotate;
     private PointCloudGLSurfaceView pointCloudGLSurfaceView;
     private Handler handler;
-    public PointCloudView(Context context) {
+    public PointCloudView(Context context, String ip, int port) {
         super(context);
+        View view = View.inflate(context, R.layout.cloudpoint_view,this);
+        pointCloudGLSurfaceView = view.findViewById(R.id.cloudPointSurface);
+        pointCloudGLSurfaceView.initUDPProtocol(ip,port);
+        xRotate = view.findViewById(R.id.xRotate);
+        yRotate = view.findViewById(R.id.yRotate);
+        zRotate = view.findViewById(R.id.zRotate);
+        handler = new Handler();
+        handler.postDelayed(updateGL,100);
+        xRotate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                pointCloudGLSurfaceView.setRotateX(isChecked);
+                if(isChecked){
+                    pointCloudGLSurfaceView.setRotateY(!isChecked);
+                    yRotate.setChecked(!isChecked);
+                    pointCloudGLSurfaceView.setRotateZ(!isChecked);
+                    zRotate.setChecked(!isChecked);
+                }else{
+                    pointCloudGLSurfaceView.setRotateX(isChecked);
+                }
+            }
+        });
+
+        yRotate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                pointCloudGLSurfaceView.setRotateY(isChecked);
+                if(isChecked){
+                    pointCloudGLSurfaceView.setRotateZ(!isChecked);
+                    zRotate.setChecked(!isChecked);
+                    pointCloudGLSurfaceView.setRotateX(!isChecked);
+                    xRotate.setChecked(!isChecked);
+                }else{
+                    pointCloudGLSurfaceView.setRotateY(isChecked);
+                }
+            }
+        });
+        zRotate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                pointCloudGLSurfaceView.setRotateZ(isChecked);
+                if(isChecked){
+                    pointCloudGLSurfaceView.setRotateX(!isChecked);
+                    xRotate.setChecked(!isChecked);
+                    pointCloudGLSurfaceView.setRotateY(isChecked);
+                    yRotate.setChecked(!isChecked);
+                }else{
+                    pointCloudGLSurfaceView.setRotateZ(isChecked);
+                }
+            }
+        });
     }
 
     public PointCloudView(Context context, AttributeSet attributeSet){

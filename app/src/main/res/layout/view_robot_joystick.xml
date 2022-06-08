@@ -6,7 +6,8 @@
     android:gravity="center"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    tools:parentTag="android.widget.RelativeLayout">
+    tools:parentTag="android.widget.RelativeLayout"
+    android:onClick="onClickJoystick">
     <com.example.robotcontroler.view.joystick.JoystickSimple
         android:id="@+id/joystick_base"
         android:layout_height="match_parent"

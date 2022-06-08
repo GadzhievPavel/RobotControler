@@ -50,7 +50,7 @@ public class JoysticDatargamClient implements Runnable{
     }
 
     public void pauseThread(){
-        send = false;
+            send = false;
     }
 
     public void resumeThread(){
@@ -67,25 +67,29 @@ public class JoysticDatargamClient implements Runnable{
             run = true;
             while (run){
                 if(send){
-                    String s = "twist";
-                    Log.e("angle st",angle+" "+strength);
-                    sendMsg = makeByteArray(s.getBytes(StandardCharsets.UTF_8), angle, strength);
-                    //Log.e("sendMsg", String.valueOf(sendMsg.toString()));
-                    Log.e("port", String.valueOf(port));
-                    DatagramPacket packet = new DatagramPacket(sendMsg, sendMsg.length, inetAddress, port);
-                    udpSocket.send(packet);
+                    sendDatagram();
                 }
             }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SocketException | UnknownHostException e) {
             e.printStackTrace();
         }
         udpSocket.close();
     }
 
+    private void sendDatagram(){
+        try {
+        String s = "twist";
+        Log.e("angle st",angle+" "+strength);
+        sendMsg = makeByteArray(s.getBytes(StandardCharsets.UTF_8), angle, strength);
+        //Log.e("sendMsg", String.valueOf(sendMsg.toString()));
+        Log.e("port", String.valueOf(port));
+        DatagramPacket packet = new DatagramPacket(sendMsg, sendMsg.length, inetAddress, port);
+
+            udpSocket.send(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void setTwist(int angle, int strength){
         this.angle = angle;
         this.strength = strength;

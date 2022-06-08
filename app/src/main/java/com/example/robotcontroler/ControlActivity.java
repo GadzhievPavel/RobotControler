@@ -2,6 +2,7 @@ package com.example.robotcontroler;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
@@ -24,15 +25,18 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.robotcontroler.view.ControlView;
+import com.example.robotcontroler.view.joystick.JoystickSimple;
 import com.example.robotcontroler.view.joystick.RobotJoystick;
+import com.example.robotcontroler.view.pointcloud.PointCloudView;
 import com.google.android.material.behavior.SwipeDismissBehavior;
 
 import java.util.ArrayList;
 
-public class ControlActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class ControlActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, View.OnTouchListener {
 
 
-    enum ViewType{JOYSTICK,TEXTINFO,POINTCLOUD};
+    enum ViewType{JOYSTICK,TEXTINFO,POINTCLOUD}
+
     ViewType viewType;
     private TextView joystickText, showText, pointCloudText;
     private EditText name, port;
@@ -49,7 +53,7 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     private  FragmentManager fragmentManager;
     private LayoutInflater inflater;
     private ViewGroup parent;
-    ArrayList<RobotJoystick> robotJoysticks;
+    ArrayList<JoystickSimple> robotJoysticks;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +66,8 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
         setAllViewListener();
         context = this;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        parent = (ViewGroup)findViewById(R.id.lay);
+        parent = findViewById(R.id.lay);
+        robotJoysticks = new ArrayList<>();
     }
 
     private void initView(){
@@ -107,35 +112,36 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
                 }else{
                     switch (viewType){
                         case JOYSTICK:
-//                            LinearLayout.LayoutParams params;
-//                            Log.e("address",ip+" "+Integer.parseInt(port.getText().toString()));
-//                            RobotJoystick robotJoystick = new RobotJoystick(ControlActivity.this,name.getText().toString(),
-//                                    ip,Integer.parseInt(port.getText().toString()));
-//                            params = new LinearLayout.LayoutParams(250,250);
-//                            robotJoystick.setLayoutParams(params);
-//                            ControlView<View> controlView = new ControlView<>(robotJoystick);
-//                            //controlView.getView().setOnTouchListener(this);
-//                            coordinatorLayout.addView(robotJoystick);
-//                            listViews.add(controlView);
-//                            setGoneCreatorView();
-                            RobotJoystick robotJoystick = new RobotJoystick(ControlActivity.this,name.getText().toString(),
+                            JoystickSimple robotJoystick = new JoystickSimple(ControlActivity.this,
                                     ip,Integer.parseInt(port.getText().toString()));
                             LinearLayout.LayoutParams params;
                             params = new LinearLayout.LayoutParams(250,250);
                             robotJoystick.setLayoutParams(params);
+                            robotJoystick.setId(View.generateViewId());
+                            robotJoystick.setButtonColor(Color.GRAY);
+                            robotJoystick.setBorderColor(Color.GREEN);
+                            robotJoystick.setOnTouchListener(this);
                             parent.addView(robotJoystick);
-                            setAllTouchListener(parent);
+                            robotJoysticks.add(robotJoystick);
                             setGoneCreatorView();
                             break;
                         case POINTCLOUD:
+                            PointCloudView cloudView = new PointCloudView(ControlActivity.this,ip,Integer.parseInt(port.getText().toString()));
+                            params = new LinearLayout.LayoutParams(parent.getWidth(), parent.getHeight()-300);
+                            cloudView.setLayoutParams(params);
+                            cloudView.setId(View.generateViewId());
+                            cloudView.setOnTouchListener(this);
+                            parent.addView(cloudView);
+                            setGoneCreatorView();
                             break;
                         case TEXTINFO:
                             TextView textView = new TextView(context);
                             params = new LinearLayout.LayoutParams(250,250);
                             textView.setLayoutParams(params);
-                            textView.setText("text info:");
+                            textView.setText(name.getText().toString());
+                            textView.setTextColor(Color.GRAY);
+                            textView.setOnTouchListener(this);
                             parent.addView(textView);
-                            setAllTouchListener(parent);
                             setGoneCreatorView();
                             break;
                     }
@@ -163,11 +169,7 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     }
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if(isChecked){
-            enableTouchListenerView(false);
-        }else{
-            enableTouchListenerView(true);
-        }
+        enableTouchListenerView(!isChecked);
     }
 
     private void enableTouchListenerView(boolean f){
@@ -181,71 +183,25 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    private void setAllTouchListener(ViewGroup viewGroup){
-        for(int i =0; i< viewGroup.getChildCount();i++){
-            Log.e("touch", String.valueOf(viewGroup.getChildAt(i)));
-            viewGroup.getChildAt(i).setOnTouchListener(onTouchListener);
-        }
-    }
-
-    private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            Log.e("view touch", String.valueOf(v.getId()));
-            final int X = (int) event.getRawX();
-            final int Y = (int) event.getRawY();
-            Log.e("touch", String.valueOf(enableDrag));
-            if (enableDrag) {
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN:
-                        CoordinatorLayout.LayoutParams lParams = (CoordinatorLayout.LayoutParams) v.getLayoutParams();
-                        _xDelta = X - lParams.leftMargin;
-                        _yDelta = Y - lParams.topMargin;
-                        Log.e("actionDown", lParams.leftMargin + " " + lParams.topMargin);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        Log.e("actionUp", "actionUp");
-                        break;
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        Log.e("actionPointrDown", "actionPointrDown");
-                        break;
-                    case MotionEvent.ACTION_POINTER_UP:
-                        Log.e("actionPointrUp", "actionPointrUp");
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) v.getLayoutParams();
-                        layoutParams.leftMargin = X - _xDelta;
-                        layoutParams.topMargin = Y - _yDelta;
-                        layoutParams.rightMargin = -250;
-                        layoutParams.bottomMargin = -250;
-                        v.setLayoutParams(layoutParams);
-                        Log.e("Move", "Move");
-                        break;
-                }
-                return true;
-
-            } else {
-                return false;
-            }
-        }
-    };
-//    @Override
-//    public boolean onTouch(View v, MotionEvent event) {
-//        Log.e("Touch","touch");
-//        for (int i = 0; i<listViews.size();i++){
-//            if(listViews.get(i).getView().equals(v)){
-//                Log.e("Touch","touch");
-//            }
+//    @SuppressLint("ClickableViewAccessibility")
+//    private void setTouchListenerJoystic(ArrayList<RobotJoystick> robotJoysticks){
+//        for(int i =0; i< robotJoysticks.size();i++){
+//            Log.e("touch", String.valueOf(robotJoysticks.get(i).getId()));
+//            robotJoysticks.get(i).setOnTouchListener(onTouchListener);
 //        }
-//        return false;
 //    }
 
-    //    @Override
+//    private final RelativeLayout.OnTouchListener onTouchListener = new RelativeLayout.OnTouchListener() {
+//            @SuppressLint("ClickableViewAccessibility")
+//            @Override
 //    public boolean onTouch(View v, MotionEvent event) {
 //        final int X = (int) event.getRawX();
 //        final int Y = (int) event.getRawY();
 //        Log.e("touch", String.valueOf(enableDrag));
 //        if(enableDrag) {
+//            for (RobotJoystick robotJoystick: robotJoysticks) {
+//                Log.e("joysticks", String.valueOf(robotJoystick.getId()));
+//            }
 //            switch (event.getAction() & MotionEvent.ACTION_MASK) {
 //                case MotionEvent.ACTION_DOWN:
 //                    CoordinatorLayout.LayoutParams lParams = (CoordinatorLayout.LayoutParams) v.getLayoutParams();
@@ -280,4 +236,54 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
 //            return false;
 //        }
 //    }
+//    };
+//    @Override
+//    public boolean onTouch(View v, MotionEvent event) {
+//        Log.e("Touch","touch");
+//        for (int i = 0; i<listViews.size();i++){
+//            if(listViews.get(i).getView().equals(v)){
+//                Log.e("Touch","touch");
+//            }
+//        }
+//        return false;
+//    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        final int X = (int) event.getRawX();
+        final int Y = (int) event.getRawY();
+        Log.e("touch", String.valueOf(enableDrag));
+        if(enableDrag) {
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_DOWN:
+                    CoordinatorLayout.LayoutParams lParams = (CoordinatorLayout.LayoutParams) v.getLayoutParams();
+                    _xDelta = X - lParams.leftMargin;
+                    _yDelta = Y - lParams.topMargin;
+                    Log.e("actionDown", lParams.leftMargin+" "+lParams.topMargin);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    Log.e("actionUp","actionUp");
+                    break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    Log.e("actionPointrDown","actionPointrDown");
+                    break;
+                case MotionEvent.ACTION_POINTER_UP:
+                    Log.e("actionPointrUp","actionPointrUp");
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) v.getLayoutParams();
+                    layoutParams.leftMargin = X - _xDelta;
+                    layoutParams.topMargin = Y - _yDelta;
+                    layoutParams.rightMargin = -250;
+                    layoutParams.bottomMargin = -250;
+                    v.setLayoutParams(layoutParams);
+                    Log.e("Move","Move");
+                    break;
+            }
+            return true;
+
+        }else{
+            return false;
+        }
+    }
 }
