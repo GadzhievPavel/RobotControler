@@ -50,7 +50,6 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     boolean enableDrag = false;
     private int _xDelta, _yDelta;
     private Context context;
-    private  FragmentManager fragmentManager;
     private LayoutInflater inflater;
     private ViewGroup parent;
     ArrayList<JoystickSimple> robotJoysticks;
